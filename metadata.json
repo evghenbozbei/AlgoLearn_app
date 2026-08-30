@@ -1,0 +1,6 @@
+{
+  "name": "AlgoLearn Python - Алгоритмы для Dev, QA и DevOps",
+  "description": "Интерактивное мобильное приложение для изучения базовых и прикладных алгоритмов на Python с пошаговой визуализацией, режимом 'Найди баг' и песочницей.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
