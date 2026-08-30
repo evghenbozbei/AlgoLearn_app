@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import appIconUrl from '../assets/images/app_icon_1788125719420.jpg';
 import {
   Search,
   CheckCircle2,
@@ -120,13 +121,21 @@ export const ChapterList: React.FC<ChapterListProps> = ({
             </div>
           </div>
 
-          <div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
-              Алгоритмы для Dev, QA & DevOps
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
-              Пошаговая программа обучения: уроки открываются последовательно от простых конструкций к сложным алгоритмам и инфраструктуре.
-            </p>
+          <div className="flex items-start gap-3.5">
+            <img
+              src={appIconUrl}
+              alt="AlgoLearn Python Icon"
+              referrerPolicy="no-referrer"
+              className="w-14 h-14 rounded-2xl object-cover shadow-lg shadow-indigo-950 border border-indigo-400/30 shrink-0 hidden sm:block"
+            />
+            <div>
+              <h1 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                Алгоритмы для Dev, QA & DevOps
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">
+                Пошаговая программа обучения: уроки открываются последовательно от простых конструкций к сложным алгоритмам и инфраструктуре.
+              </p>
+            </div>
           </div>
 
           {/* Quick Continue Card if not all finished */}

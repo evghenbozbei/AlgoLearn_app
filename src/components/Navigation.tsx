@@ -1,4 +1,5 @@
 import React from 'react';
+import appIconUrl from '../assets/images/app_icon_1788125719420.jpg';
 import {
   BookOpen,
   Sliders,
@@ -7,8 +8,7 @@ import {
   BarChart3,
   Smartphone,
   Monitor,
-  Flame,
-  Code
+  Flame
 } from 'lucide-react';
 
 export type MainNavTab = 'lessons' | 'sandbox' | 'bugs' | 'quiz' | 'progress';
@@ -38,9 +38,12 @@ export const Navigation: React.FC<NavigationProps> = ({
             onClick={() => onTabChange('lessons')}
             className="flex items-center gap-2.5 cursor-pointer select-none group"
           >
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center text-white font-bold shadow-md shadow-indigo-600/30 group-hover:scale-105 transition-transform">
-              <Code size={18} />
-            </div>
+            <img
+              src={appIconUrl}
+              alt="AlgoLearn Python Icon"
+              referrerPolicy="no-referrer"
+              className="w-8 h-8 rounded-xl object-cover shadow-md shadow-indigo-600/30 group-hover:scale-105 transition-transform border border-indigo-500/30"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-extrabold text-sm tracking-tight text-white">

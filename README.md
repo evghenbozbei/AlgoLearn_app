@@ -145,6 +145,21 @@ npx cap sync android
    ```
 5. Этот `.apk` файл можно скопировать на любой Android-смартфон и установить (разрешив установку из неизвестных источников).
 
+### 2.5. Установка иконки приложения для Android (App Icon)
+В проект уже включена сгенерированная стильная 3D-иконка приложения:
+- Исходный файл иконки: `src/assets/images/app_icon_*.jpg`
+
+Чтобы автоматически сгенерировать все разрешения иконок для Android (`mipmap-mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`):
+```bash
+# Установка генератора ассетов Capacitor
+npm install -D @capacitor/assets
+
+# Создайте папку assets/ в корне (если нет) и положите туда icon.png (или icon.jpg)
+# Запуск генерации иконок и сплэш-скринов для Android:
+npx capacitor-assets generate --android
+```
+Либо в **Android Studio** нажмите правой кнопкой на папку `android/app/src/main/res` ➔ **`New`** ➔ **`Image Asset`** и выберите изображение иконки из `src/assets/images/`.
+
 ---
 
 ### 3. Сборка через командную строку (CLI / Gradle)

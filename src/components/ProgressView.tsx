@@ -1,4 +1,5 @@
 import React from 'react';
+import appIconUrl from '../assets/images/app_icon_1788125719420.jpg';
 import {
   Trophy,
   Flame,
@@ -265,6 +266,27 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
             ))}
           </div>
         )}
+      </div>
+
+      {/* App Badge & Info */}
+      <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center gap-3.5">
+        <img
+          src={appIconUrl}
+          alt="AlgoLearn Python App Icon"
+          referrerPolicy="no-referrer"
+          className="w-12 h-12 rounded-xl object-cover shadow-md shadow-indigo-950 border border-indigo-500/30 shrink-0"
+        />
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h4 className="text-xs sm:text-sm font-bold text-white">AlgoLearn Python</h4>
+            <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+              v1.2 Mobile
+            </span>
+          </div>
+          <p className="text-[11px] text-slate-400 mt-0.5">
+            Python 3.12 • Интерактивный тренажер алгоритмов для Dev, QA & DevOps
+          </p>
+        </div>
       </div>
 
       {/* Reset Progress Section */}
