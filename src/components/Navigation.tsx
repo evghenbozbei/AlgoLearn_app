@@ -8,8 +8,11 @@ import {
   BarChart3,
   Smartphone,
   Monitor,
-  Flame
+  Flame,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 
 export type MainNavTab = 'lessons' | 'sandbox' | 'bugs' | 'quiz' | 'progress';
 
@@ -28,10 +31,18 @@ export const Navigation: React.FC<NavigationProps> = ({
   onToggleFrame,
   streakCount
 }) => {
+  const { theme, toggleTheme } = useTheme();
+
   return (
     <>
       {/* Top App Bar */}
-      <header className="sticky top-0 z-30 bg-slate-950/85 backdrop-blur-md border-b border-slate-800/80 px-4 py-3">
+      <header
+        style={{
+          backgroundColor: 'var(--header-bg)',
+          borderColor: 'var(--header-border)'
+        }}
+        className="sticky top-0 z-30 backdrop-blur-md border-b px-4 py-3 transition-colors duration-200"
+      >
         <div className="flex items-center justify-between max-w-4xl mx-auto">
           {/* Logo & Brand */}
           <div
@@ -46,14 +57,27 @@ export const Navigation: React.FC<NavigationProps> = ({
             />
             <div>
               <div className="flex items-center gap-1.5">
-                <span className="font-extrabold text-sm tracking-tight text-white">
+                <span
+                  style={{ color: 'var(--text-primary)' }}
+                  className="font-extrabold text-sm tracking-tight"
+                >
                   AlgoLearn
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-bold border border-indigo-500/30">
+                <span
+                  style={{
+                    backgroundColor: 'var(--accent-indigo-bg)',
+                    borderColor: 'var(--accent-indigo-border)',
+                    color: 'var(--accent-indigo-text)'
+                  }}
+                  className="text-[10px] font-mono px-1.5 py-0.2 rounded font-bold border"
+                >
                   Python
                 </span>
               </div>
-              <span className="text-[10px] text-slate-400 block -mt-0.5">
+              <span
+                style={{ color: 'var(--text-muted)' }}
+                className="text-[10px] block -mt-0.5"
+              >
                 Dev • QA • DevOps
               </span>
             </div>
@@ -61,11 +85,35 @@ export const Navigation: React.FC<NavigationProps> = ({
 
           {/* Right Header Actions */}
           <div className="flex items-center gap-2">
+            {/* Theme Toggle Button */}
+            <button
+              id="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+              className="flex items-center justify-center w-8 h-8 rounded-xl transition-all duration-200 border"
+              style={{
+                backgroundColor: 'var(--card-subtle-bg)',
+                borderColor: 'var(--card-border)',
+                color: theme === 'dark' ? '#fde047' : '#4f46e5'
+              }}
+            >
+              {theme === 'dark' ? (
+                <Sun size={16} className="animate-spin-slow hover:scale-110 transition-transform" />
+              ) : (
+                <Moon size={16} className="hover:scale-110 transition-transform" />
+              )}
+            </button>
+
             {/* Desktop Screen Mode Switcher */}
             <button
               onClick={onToggleFrame}
               title={isMobileFrame ? 'Переключить на полный экран' : 'Переключить в мобильный фрейм'}
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white text-xs transition-colors"
+              style={{
+                backgroundColor: 'var(--card-subtle-bg)',
+                borderColor: 'var(--card-border)',
+                color: 'var(--text-secondary)'
+              }}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs transition-colors hover:opacity-90"
             >
               {isMobileFrame ? (
                 <>
@@ -74,15 +122,22 @@ export const Navigation: React.FC<NavigationProps> = ({
                 </>
               ) : (
                 <>
-                  <Smartphone size={14} className="text-emerald-400" />
+                  <Smartphone size={14} className="text-emerald-500" />
                   <span>Мобильный вид</span>
                 </>
               )}
             </button>
 
             {/* Streak Badge */}
-            <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-mono font-bold">
-              <Flame size={13} className="text-amber-400 fill-amber-400" />
+            <div
+              style={{
+                backgroundColor: 'var(--accent-amber-bg)',
+                borderColor: 'var(--accent-amber-border)',
+                color: 'var(--accent-amber-text)'
+              }}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-xl border text-xs font-mono font-bold"
+            >
+              <Flame size={13} className="text-amber-500 fill-amber-500" />
               <span>{streakCount}</span>
             </div>
           </div>
@@ -90,7 +145,13 @@ export const Navigation: React.FC<NavigationProps> = ({
       </header>
 
       {/* Bottom Floating Mobile Tab Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-lg border-t border-slate-800 px-2 py-1.5 shadow-2xl">
+      <nav
+        style={{
+          backgroundColor: 'var(--nav-bg)',
+          borderColor: 'var(--nav-border)'
+        }}
+        className="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-lg border-t px-2 py-1.5 shadow-2xl transition-colors duration-200"
+      >
         <div className="flex items-center justify-around max-w-lg mx-auto">
           {[
             { key: 'lessons', label: 'Уроки', icon: BookOpen },
@@ -109,8 +170,8 @@ export const Navigation: React.FC<NavigationProps> = ({
                 onClick={() => onTabChange(tab.key as MainNavTab)}
                 className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all relative ${
                   isActive
-                    ? 'text-indigo-400 font-semibold'
-                    : 'text-slate-500 hover:text-slate-300'
+                    ? 'text-indigo-500 font-semibold'
+                    : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
                 }`}
               >
                 <div
@@ -122,7 +183,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 </div>
                 <span className="text-[10px] mt-0.5">{tab.label}</span>
                 {isActive && (
-                  <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-indigo-400" />
+                  <span className="absolute -bottom-1 w-1 h-1 rounded-full bg-indigo-500" />
                 )}
               </button>
             );

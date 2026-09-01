@@ -69,7 +69,9 @@ export const Sandbox: React.FC = () => {
   }, [selectedAlgo, preparedArray, searchTarget]);
 
   // Algorithm info definitions
-  const algoDetails: { [key in AlgorithmKey]: { name: string; time: string; space: string; code: string; desc: string } } = {
+  const algoDetails: {
+    [key in AlgorithmKey]: { name: string; time: string; space: string; code: string; desc: string };
+  } = {
     linear: {
       name: 'Линейный поиск (Linear Search)',
       time: 'O(n)',
@@ -152,13 +154,27 @@ export const Sandbox: React.FC = () => {
   return (
     <div className="space-y-4 pb-20">
       {/* Header */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/40 via-purple-900/30 to-slate-900 border border-indigo-500/30">
-        <div className="flex items-center gap-2 text-indigo-400 text-xs font-semibold mb-1 uppercase tracking-wider">
+      <div
+        style={{
+          backgroundColor: 'var(--card-bg)',
+          borderColor: 'var(--card-border)'
+        }}
+        className="p-4 rounded-2xl border shadow-sm transition-colors"
+      >
+        <div className="flex items-center gap-2 text-indigo-500 text-xs font-semibold mb-1 uppercase tracking-wider">
           <Sliders size={14} />
           <span>Интерактивная песочница</span>
         </div>
-        <h1 className="text-xl font-bold text-white">Algorithm Sandbox</h1>
-        <p className="text-xs text-slate-300 mt-1">
+        <h1
+          style={{ color: 'var(--text-primary)' }}
+          className="text-xl font-bold"
+        >
+          Algorithm Sandbox
+        </h1>
+        <p
+          style={{ color: 'var(--text-muted)' }}
+          className="text-xs mt-1"
+        >
           Введите свои числа, выберите алгоритм и управляйте пошаговой анимацией с замерами операций.
         </p>
       </div>
@@ -171,30 +187,47 @@ export const Sandbox: React.FC = () => {
           { key: 'bubble', label: '🫧 Bubble Sort' },
           { key: 'selection', label: '🎯 Selection Sort' },
           { key: 'insertion', label: '🃏 Insertion Sort' }
-        ].map((item) => (
-          <button
-            key={item.key}
-            onClick={() => setSelectedAlgo(item.key as AlgorithmKey)}
-            className={`px-3 py-2 rounded-xl whitespace-nowrap font-medium transition-all ${
-              selectedAlgo === item.key
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 ring-1 ring-indigo-400'
-                : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800'
-            }`}
-          >
-            {item.label}
-          </button>
-        ))}
+        ].map((item) => {
+          const isSelected = selectedAlgo === item.key;
+          return (
+            <button
+              key={item.key}
+              onClick={() => setSelectedAlgo(item.key as AlgorithmKey)}
+              style={{
+                backgroundColor: isSelected ? undefined : 'var(--card-bg)',
+                borderColor: isSelected ? undefined : 'var(--card-border)',
+                color: isSelected ? undefined : 'var(--text-secondary)'
+              }}
+              className={`px-3 py-2 rounded-xl whitespace-nowrap font-medium transition-all border ${
+                isSelected
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/30'
+                  : 'hover:opacity-90'
+              }`}
+            >
+              {item.label}
+            </button>
+          );
+        })}
       </div>
 
       {/* Inputs Configuration Card */}
-      <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">
+      <div
+        style={{
+          backgroundColor: 'var(--card-bg)',
+          borderColor: 'var(--card-border)'
+        }}
+        className="p-4 rounded-2xl border space-y-3 shadow-sm transition-colors"
+      >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <label className="text-xs font-semibold text-slate-300">
+          <label
+            style={{ color: 'var(--text-secondary)' }}
+            className="text-xs font-semibold"
+          >
             Входной массив чисел (через запятую):
           </label>
           <button
             onClick={generateRandomArray}
-            className="flex items-center gap-1 text-[11px] text-indigo-400 hover:text-indigo-300 font-medium self-start sm:self-auto"
+            className="flex items-center gap-1 text-[11px] text-indigo-500 hover:opacity-80 font-medium self-start sm:self-auto"
           >
             <RefreshCw size={12} />
             <span>Случайный массив</span>
@@ -205,26 +238,46 @@ export const Sandbox: React.FC = () => {
           type="text"
           value={customInput}
           onChange={(e) => setCustomInput(e.target.value)}
-          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-slate-100 text-sm font-mono focus:outline-none focus:border-indigo-500 transition-colors"
+          style={{
+            backgroundColor: 'var(--input-bg)',
+            borderColor: 'var(--input-border)',
+            color: 'var(--input-fg)'
+          }}
+          className="w-full px-3.5 py-2.5 rounded-xl border text-sm font-mono focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
           placeholder="например: 4, 12, 28, 35, 60"
         />
 
         {(selectedAlgo === 'linear' || selectedAlgo === 'binary') && (
           <div className="flex items-center gap-3 pt-1">
-            <label className="text-xs font-semibold text-slate-300 whitespace-nowrap">
+            <label
+              style={{ color: 'var(--text-secondary)' }}
+              className="text-xs font-semibold whitespace-nowrap"
+            >
               Искомый элемент (target):
             </label>
             <input
               type="number"
               value={searchTarget}
               onChange={(e) => setSearchTarget(parseInt(e.target.value, 10) || 0)}
-              className="w-24 px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-slate-100 text-sm font-mono focus:outline-none focus:border-indigo-500"
+              style={{
+                backgroundColor: 'var(--input-bg)',
+                borderColor: 'var(--input-border)',
+                color: 'var(--input-fg)'
+              }}
+              className="w-24 px-3 py-1.5 rounded-lg border text-sm font-mono focus:outline-none focus:border-indigo-500"
             />
           </div>
         )}
 
         {selectedAlgo === 'binary' && (
-          <div className="text-[11px] text-amber-400/90 flex items-center gap-1.5 bg-amber-950/30 p-2 rounded-lg border border-amber-800/40">
+          <div
+            style={{
+              backgroundColor: 'var(--accent-amber-bg)',
+              borderColor: 'var(--accent-amber-border)',
+              color: 'var(--accent-amber-text)'
+            }}
+            className="text-[11px] flex items-center gap-1.5 p-2 rounded-lg border"
+          >
             <HelpCircle size={13} className="shrink-0" />
             <span>Массив автоматически отсортирован по возрастанию для бинарного поиска.</span>
           </div>
@@ -247,9 +300,9 @@ export const Sandbox: React.FC = () => {
 
       {/* Python Code Synchronized Box */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs text-slate-400 px-1">
-          <span>Синхронизированный Python-код:</span>
-          <span className="font-mono text-indigo-400 font-semibold">
+        <div className="flex items-center justify-between text-xs px-1">
+          <span style={{ color: 'var(--text-secondary)' }}>Синхронизированный Python-код:</span>
+          <span className="font-mono text-indigo-500 font-semibold">
             Время: {currentAlgo.time} | Память: {currentAlgo.space}
           </span>
         </div>

@@ -50,19 +50,40 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
   return (
     <div className="space-y-4 pb-20">
       {/* Header */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-rose-950/60 via-slate-900 to-indigo-950/50 border border-rose-500/30">
+      <div
+        style={{
+          backgroundColor: 'var(--card-bg)',
+          borderColor: 'var(--card-border)'
+        }}
+        className="p-4 rounded-2xl border shadow-sm transition-colors"
+      >
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-rose-400 text-xs font-semibold uppercase tracking-wider">
+          <div className="flex items-center gap-2 text-rose-500 text-xs font-semibold uppercase tracking-wider">
             <Bug size={15} />
             <span>Режим QA & Code Review</span>
           </div>
-          <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300">
+          <span
+            style={{
+              backgroundColor: 'var(--card-subtle-bg)',
+              color: 'var(--text-secondary)',
+              borderColor: 'var(--card-border)'
+            }}
+            className="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border"
+          >
             Решено: {progress.completedBugs.length} / {BUG_CHALLENGES.length}
           </span>
         </div>
-        <h1 className="text-xl font-bold text-white mt-1">Найди баг в алгоритме</h1>
-        <p className="text-xs text-slate-300 mt-1">
-          Анализируйте код с типичными ошибками новичков: off-by-one, бесконечная рекурсия, мутации списков и падения стека.
+        <h1
+          style={{ color: 'var(--text-primary)' }}
+          className="text-xl font-bold mt-1"
+        >
+          Найди баг в алгоритме
+        </h1>
+        <p
+          style={{ color: 'var(--text-muted)' }}
+          className="text-xs mt-1"
+        >
+          Анализируйте код с типичными ошибками: off-by-one, бесконечная рекурсия, мутации списков и падения стека.
         </p>
       </div>
 
@@ -80,15 +101,34 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
                 setSelectedOptionIndex(null);
                 setShowSolution(false);
               }}
-              className={`px-3 py-2 rounded-xl whitespace-nowrap font-medium flex items-center gap-1.5 transition-all ${
-                isCurrent
-                  ? 'bg-rose-600 text-white shadow-lg shadow-rose-600/30 ring-1 ring-rose-400'
+              style={{
+                backgroundColor: isCurrent
+                  ? undefined
                   : solved
-                  ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-800/60'
-                  : 'bg-slate-900/80 text-slate-400 border border-slate-800 hover:bg-slate-800'
+                  ? 'var(--accent-emerald-bg)'
+                  : 'var(--card-bg)',
+                borderColor: isCurrent
+                  ? undefined
+                  : solved
+                  ? 'var(--accent-emerald-border)'
+                  : 'var(--card-border)',
+                color: isCurrent
+                  ? undefined
+                  : solved
+                  ? 'var(--accent-emerald-text)'
+                  : 'var(--text-secondary)'
+              }}
+              className={`px-3 py-2 rounded-xl whitespace-nowrap font-medium flex items-center gap-1.5 transition-all border ${
+                isCurrent
+                  ? 'bg-rose-600 text-white border-rose-600 shadow-md shadow-rose-600/30'
+                  : 'hover:opacity-90'
               }`}
             >
-              {solved ? <CheckCircle2 size={13} className="text-emerald-400" /> : <Bug size={13} />}
+              {solved ? (
+                <CheckCircle2 size={13} className="text-emerald-500" />
+              ) : (
+                <Bug size={13} className="text-rose-500" />
+              )}
               <span>Задача #{idx + 1}</span>
             </button>
           );
@@ -96,27 +136,55 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
       </div>
 
       {/* Scenario Box */}
-      <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-2">
+      <div
+        style={{
+          backgroundColor: 'var(--card-bg)',
+          borderColor: 'var(--card-border)'
+        }}
+        className="p-4 rounded-2xl border space-y-2 shadow-sm transition-colors"
+      >
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
+          <h2
+            style={{ color: 'var(--text-primary)' }}
+            className="text-base font-bold flex items-center gap-2"
+          >
             <span>{bug.title}</span>
           </h2>
-          <span className="text-[11px] px-2 py-0.5 rounded font-mono font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/30">
+          <span
+            style={{
+              backgroundColor: 'var(--accent-rose-bg)',
+              color: 'var(--accent-rose-text)',
+              borderColor: 'var(--accent-rose-border)'
+            }}
+            className="text-[11px] px-2 py-0.5 rounded font-mono font-semibold border"
+          >
             {bug.difficulty === 'easy' ? 'Легкая' : 'Средняя'}
           </span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800/80 text-xs text-slate-300 leading-relaxed flex items-start gap-2.5">
-          <ShieldAlert size={16} className="text-amber-400 shrink-0 mt-0.5" />
+        <div
+          style={{
+            backgroundColor: 'var(--card-subtle-bg)',
+            borderColor: 'var(--card-border)',
+            color: 'var(--text-secondary)'
+          }}
+          className="p-3 rounded-xl border text-xs leading-relaxed flex items-start gap-2.5"
+        >
+          <ShieldAlert size={16} className="text-amber-500 shrink-0 mt-0.5" />
           <div>
-            <strong className="text-slate-100 block mb-0.5">Сценарий падения:</strong>
+            <strong style={{ color: 'var(--text-primary)' }} className="block mb-0.5">
+              Сценарий падения:
+            </strong>
             {bug.scenario}
           </div>
         </div>
 
         {/* Buggy Code Snippet */}
         <div className="pt-1">
-          <span className="text-xs font-semibold text-slate-400 block mb-1">
+          <span
+            style={{ color: 'var(--text-muted)' }}
+            className="text-xs font-semibold block mb-1"
+          >
             Проблемный код на Python:
           </span>
           <PythonCodeViewer
@@ -129,38 +197,66 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
 
       {/* Answer Options */}
       <div className="space-y-2.5">
-        <h3 className="text-xs font-bold text-slate-300 uppercase tracking-wider px-1">
+        <h3
+          style={{ color: 'var(--text-secondary)' }}
+          className="text-xs font-bold uppercase tracking-wider px-1"
+        >
           В чем заключается причина бага и как его исправить?
         </h3>
 
         {bug.options.map((opt, idx) => {
           const isSelected = selectedOptionIndex === idx;
-          let btnStyle = 'bg-slate-900/90 border-slate-800 hover:bg-slate-800 text-slate-200';
-
-          if (isSelected) {
-            if (opt.isCorrect) {
-              btnStyle = 'bg-emerald-950/60 border-emerald-500 text-emerald-200 ring-2 ring-emerald-500/40';
-            } else {
-              btnStyle = 'bg-rose-950/60 border-rose-500 text-rose-200 ring-2 ring-rose-500/40';
-            }
-          }
 
           return (
             <div key={idx} className="space-y-1.5">
               <button
                 onClick={() => handleSelectOption(idx)}
-                className={`w-full text-left p-3.5 rounded-xl border text-xs leading-relaxed transition-all flex items-start gap-3 active:scale-[0.99] ${btnStyle}`}
+                style={{
+                  backgroundColor:
+                    selectedOptionIndex === null
+                      ? 'var(--card-bg)'
+                      : isSelected
+                      ? opt.isCorrect
+                        ? 'var(--accent-emerald-bg)'
+                        : 'var(--accent-rose-bg)'
+                      : 'var(--card-bg)',
+                  borderColor:
+                    selectedOptionIndex === null
+                      ? 'var(--card-border)'
+                      : isSelected
+                      ? opt.isCorrect
+                        ? 'var(--accent-emerald-border)'
+                        : 'var(--accent-rose-border)'
+                      : 'var(--card-border)',
+                  color:
+                    selectedOptionIndex === null
+                      ? 'var(--text-primary)'
+                      : isSelected
+                      ? opt.isCorrect
+                        ? 'var(--accent-emerald-text)'
+                        : 'var(--accent-rose-text)'
+                      : 'var(--text-faint)'
+                }}
+                className={`w-full text-left p-3.5 rounded-xl border text-xs leading-relaxed transition-all flex items-start gap-3 active:scale-[0.99] shadow-sm ${
+                  selectedOptionIndex !== null && !isSelected ? 'opacity-60' : ''
+                }`}
               >
-                <div className="w-5 h-5 rounded-full border border-slate-600 flex items-center justify-center shrink-0 font-mono text-[11px] font-bold mt-0.5">
+                <div
+                  style={{
+                    borderColor: 'var(--card-border)',
+                    color: 'var(--text-secondary)'
+                  }}
+                  className="w-5 h-5 rounded-full border flex items-center justify-center shrink-0 font-mono text-[11px] font-bold mt-0.5"
+                >
                   {String.fromCharCode(65 + idx)}
                 </div>
                 <div className="flex-1 font-medium">{opt.text}</div>
                 {isSelected && (
                   <div>
                     {opt.isCorrect ? (
-                      <CheckCircle2 size={16} className="text-emerald-400" />
+                      <CheckCircle2 size={16} className="text-emerald-500" />
                     ) : (
-                      <XCircle size={16} className="text-rose-400" />
+                      <XCircle size={16} className="text-rose-500" />
                     )}
                   </div>
                 )}
@@ -169,11 +265,12 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
               {/* Explanation on select */}
               {isSelected && (
                 <div
-                  className={`p-3 rounded-xl text-xs leading-relaxed border ${
-                    opt.isCorrect
-                      ? 'bg-emerald-950/30 border-emerald-800 text-emerald-300'
-                      : 'bg-rose-950/30 border-rose-800 text-rose-300'
-                  }`}
+                  style={{
+                    backgroundColor: opt.isCorrect ? 'var(--accent-emerald-bg)' : 'var(--accent-rose-bg)',
+                    borderColor: opt.isCorrect ? 'var(--accent-emerald-border)' : 'var(--accent-rose-border)',
+                    color: opt.isCorrect ? 'var(--accent-emerald-text)' : 'var(--accent-rose-text)'
+                  }}
+                  className="p-3 rounded-xl text-xs leading-relaxed border"
                 >
                   <p className="font-semibold mb-1">
                     {opt.isCorrect ? '✅ Верно!' : '❌ Не совсем:'}
@@ -190,19 +287,32 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
       <div className="pt-2">
         <button
           onClick={() => setShowSolution(!showSolution)}
-          className="flex items-center gap-2 text-xs font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+          className="flex items-center gap-2 text-xs font-semibold text-indigo-500 hover:opacity-80 transition-colors"
         >
           <Lightbulb size={14} />
           <span>{showSolution ? 'Скрыть исправленный код' : 'Показать исправленный код и вывод'}</span>
         </button>
 
         {showSolution && (
-          <div className="mt-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-2 animate-fadeIn">
-            <span className="text-xs font-semibold text-emerald-400 block">
+          <div
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--card-border)'
+            }}
+            className="mt-3 p-3.5 rounded-xl border space-y-2 animate-fadeIn shadow-sm"
+          >
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 block">
               Исправленная версия (Fixed):
             </span>
             <PythonCodeViewer code={bug.fixedCode} title="fixed_solution.py" />
-            <div className="p-3 rounded-lg bg-indigo-950/40 border border-indigo-800/40 text-xs text-indigo-200">
+            <div
+              style={{
+                backgroundColor: 'var(--accent-indigo-bg)',
+                borderColor: 'var(--accent-indigo-border)',
+                color: 'var(--accent-indigo-text)'
+              }}
+              className="p-3 rounded-lg border text-xs"
+            >
               <strong>Главный вывод:</strong> {bug.takeaway}
             </div>
           </div>
@@ -210,11 +320,19 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between pt-3 border-t border-slate-800">
+      <div
+        style={{ borderColor: 'var(--card-border)' }}
+        className="flex items-center justify-between pt-3 border-t"
+      >
         <button
           onClick={handlePrevChallenge}
           disabled={selectedBugIndex === 0}
-          className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-30 text-slate-300 text-xs font-medium transition-all"
+          style={{
+            backgroundColor: 'var(--card-bg)',
+            borderColor: 'var(--card-border)',
+            color: 'var(--text-secondary)'
+          }}
+          className="px-3.5 py-2 rounded-xl border disabled:opacity-30 text-xs font-medium transition-all hover:opacity-90"
         >
           ◀ Предыдущий баг
         </button>
@@ -222,7 +340,7 @@ export const BugHunter: React.FC<BugHunterProps> = ({ progress, onCompleteBug })
         <button
           onClick={handleNextChallenge}
           disabled={selectedBugIndex === BUG_CHALLENGES.length - 1}
-          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-medium transition-all flex items-center gap-1.5"
+          className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 text-white text-xs font-medium transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/30"
         >
           <span>Следующий баг</span>
           <ChevronRight size={14} />

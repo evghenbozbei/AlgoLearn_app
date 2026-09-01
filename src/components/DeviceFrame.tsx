@@ -12,12 +12,30 @@ export const DeviceFrame: React.FC<DeviceFrameProps> = ({ children, isMobileFram
 
   return (
     <div className="flex justify-center items-start min-h-[calc(100vh-60px)] py-3 px-2">
-      <div className="w-full max-w-md bg-slate-950 border border-slate-800/80 rounded-[32px] shadow-2xl overflow-hidden min-h-[820px] relative flex flex-col ring-1 ring-slate-800">
+      <div
+        style={{
+          backgroundColor: 'var(--phone-frame-bg)',
+          borderColor: 'var(--phone-frame-border)'
+        }}
+        className="w-full max-w-md border rounded-[32px] shadow-2xl overflow-hidden min-h-[820px] relative flex flex-col ring-1 ring-slate-700/30 transition-colors duration-200"
+      >
         {/* Mock Phone Speaker Notch */}
         <div className="w-full h-4 flex justify-center items-center pt-2 select-none">
-          <div className="w-20 h-3.5 bg-slate-900 rounded-full flex items-center justify-center gap-2 px-2 border border-slate-800">
-            <div className="w-2 h-2 rounded-full bg-slate-800" />
-            <div className="w-8 h-1 rounded-full bg-slate-800" />
+          <div
+            style={{
+              backgroundColor: 'var(--phone-speaker-bg)',
+              borderColor: 'var(--phone-frame-border)'
+            }}
+            className="w-20 h-3.5 rounded-full flex items-center justify-center gap-2 px-2 border"
+          >
+            <div
+              style={{ backgroundColor: 'var(--phone-speaker-pill)' }}
+              className="w-2 h-2 rounded-full"
+            />
+            <div
+              style={{ backgroundColor: 'var(--phone-speaker-pill)' }}
+              className="w-8 h-1 rounded-full"
+            />
           </div>
         </div>
 

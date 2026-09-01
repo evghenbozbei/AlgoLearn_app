@@ -1,8 +1,180 @@
 @import "tailwindcss";
 
+:root,
+[data-theme="dark"],
+.dark {
+  color-scheme: dark;
+
+  /* Surfaces & Backgrounds */
+  --app-bg: #020617; /* slate-950 */
+  --app-fg: #f8fafc; /* slate-50 */
+  
+  --card-bg: rgba(15, 23, 42, 0.85); /* slate-900/85 */
+  --card-bg-solid: #0f172a; /* slate-900 */
+  --card-hover-bg: #1e293b; /* slate-800 */
+  --card-subtle-bg: rgba(2, 6, 23, 0.65); /* slate-950/65 */
+  
+  --card-border: #334155; /* slate-700 */
+  --card-border-subtle: rgba(51, 65, 85, 0.6); /* slate-700/60 */
+  --card-border-highlight: rgba(99, 102, 241, 0.5);
+  
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+  --card-shadow-sm: 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+
+  --header-bg: rgba(2, 6, 23, 0.85);
+  --header-border: rgba(51, 65, 85, 0.8);
+
+  --nav-bg: rgba(2, 6, 23, 0.92);
+  --nav-border: #334155;
+
+  --phone-frame-bg: #020617;
+  --phone-frame-border: #1e293b;
+  --phone-speaker-bg: #0f172a;
+  --phone-speaker-pill: #1e293b;
+
+  --input-bg: #020617;
+  --input-border: #334155;
+  --input-fg: #f8fafc;
+  --input-placeholder: #64748b;
+
+  --code-bg: #090d16;
+  --code-border: #1e293b;
+  --code-header-bg: #0f172a;
+  --code-active-line: rgba(99, 102, 241, 0.25);
+  --code-active-border: #818cf8;
+
+  --modal-backdrop: rgba(2, 6, 23, 0.8);
+  --modal-bg: #0f172a;
+  --modal-border: #334155;
+
+  /* Typography */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+
+  /* Role & Badge Accents */
+  --accent-indigo-bg: rgba(99, 102, 241, 0.15);
+  --accent-indigo-border: rgba(99, 102, 241, 0.3);
+  --accent-indigo-text: #a5b4fc;
+
+  --accent-emerald-bg: rgba(16, 185, 129, 0.15);
+  --accent-emerald-border: rgba(16, 185, 129, 0.3);
+  --accent-emerald-text: #6ee7b7;
+
+  --accent-amber-bg: rgba(245, 158, 11, 0.15);
+  --accent-amber-border: rgba(245, 158, 11, 0.3);
+  --accent-amber-text: #fcd34d;
+
+  --accent-rose-bg: rgba(244, 63, 94, 0.15);
+  --accent-rose-border: rgba(244, 63, 94, 0.3);
+  --accent-rose-text: #fda4af;
+
+  --accent-cyan-bg: rgba(6, 182, 212, 0.15);
+  --accent-cyan-border: rgba(6, 182, 212, 0.3);
+  --accent-cyan-text: #67e8f9;
+
+  --accent-purple-bg: rgba(168, 85, 247, 0.15);
+  --accent-purple-border: rgba(168, 85, 247, 0.3);
+  --accent-purple-text: #d8b4fe;
+
+  --tab-inactive-fg: #64748b;
+  --tab-inactive-hover: #cbd5e1;
+
+  --scrollbar-thumb: rgba(148, 163, 184, 0.2);
+  --scrollbar-thumb-hover: rgba(148, 163, 184, 0.4);
+}
+
+[data-theme="light"],
+.light {
+  color-scheme: light;
+
+  /* Surfaces & Backgrounds */
+  --app-bg: #f8fafc; /* slate-50 */
+  --app-fg: #0f172a; /* slate-900 */
+  
+  --card-bg: #ffffff; /* white */
+  --card-bg-solid: #ffffff;
+  --card-hover-bg: #f1f5f9; /* slate-100 */
+  --card-subtle-bg: #f8fafc; /* slate-50 */
+  
+  --card-border: #e2e8f0; /* slate-200 */
+  --card-border-subtle: #cbd5e1; /* slate-300 */
+  --card-border-highlight: rgba(99, 102, 241, 0.5);
+  
+  --card-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --card-shadow-sm: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: #e2e8f0;
+
+  --nav-bg: rgba(255, 255, 255, 0.94);
+  --nav-border: #e2e8f0;
+
+  --phone-frame-bg: #f8fafc;
+  --phone-frame-border: #cbd5e1;
+  --phone-speaker-bg: #e2e8f0;
+  --phone-speaker-pill: #cbd5e1;
+
+  --input-bg: #ffffff;
+  --input-border: #cbd5e1;
+  --input-fg: #0f172a;
+  --input-placeholder: #94a3b8;
+
+  --code-bg: #1e293b; /* maintain pleasant dark terminal contrast for code editor */
+  --code-border: #334155;
+  --code-header-bg: #0f172a;
+  --code-active-line: rgba(99, 102, 241, 0.35);
+  --code-active-border: #818cf8;
+
+  --modal-backdrop: rgba(15, 23, 42, 0.5);
+  --modal-bg: #ffffff;
+  --modal-border: #e2e8f0;
+
+  /* Typography */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-faint: #94a3b8;
+
+  /* Role & Badge Accents */
+  --accent-indigo-bg: #e0e7ff;
+  --accent-indigo-border: #c7d2fe;
+  --accent-indigo-text: #4338ca;
+
+  --accent-emerald-bg: #d1fae5;
+  --accent-emerald-border: #a7f3d0;
+  --accent-emerald-text: #065f46;
+
+  --accent-amber-bg: #fef3c7;
+  --accent-amber-border: #fde68a;
+  --accent-amber-text: #92400e;
+
+  --accent-rose-bg: #ffe4e6;
+  --accent-rose-border: #fecdd3;
+  --accent-rose-text: #9f1239;
+
+  --accent-cyan-bg: #cffafe;
+  --accent-cyan-border: #a5f3fc;
+  --accent-cyan-text: #155e75;
+
+  --accent-purple-bg: #f3e8ff;
+  --accent-purple-border: #e9d5ff;
+  --accent-purple-text: #6b21a8;
+
+  --tab-inactive-fg: #64748b;
+  --tab-inactive-hover: #0f172a;
+
+  --scrollbar-thumb: rgba(100, 116, 139, 0.3);
+  --scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
+}
+
 @layer base {
   body {
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--app-bg);
+    color: var(--app-fg);
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 
   code, pre, .font-mono {
@@ -10,7 +182,56 @@
   }
 }
 
-/* Custom scrollbar for mobile feel */
+/* Reusable Theme Classes driven by CSS Variables */
+.theme-app-bg {
+  background-color: var(--app-bg);
+}
+
+.theme-app-fg {
+  color: var(--app-fg);
+}
+
+.theme-card {
+  background-color: var(--card-bg);
+  border-color: var(--card-border);
+  box-shadow: var(--card-shadow);
+}
+
+.theme-card-subtle {
+  background-color: var(--card-subtle-bg);
+  border-color: var(--card-border-subtle);
+}
+
+.theme-header {
+  background-color: var(--header-bg);
+  border-color: var(--header-border);
+}
+
+.theme-nav {
+  background-color: var(--nav-bg);
+  border-color: var(--nav-border);
+}
+
+.theme-input {
+  background-color: var(--input-bg);
+  border-color: var(--input-border);
+  color: var(--input-fg);
+}
+
+.theme-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.theme-modal {
+  background-color: var(--modal-bg);
+  border-color: var(--modal-border);
+}
+
+.theme-modal-backdrop {
+  background-color: var(--modal-backdrop);
+}
+
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -21,10 +242,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.2);
+  background: var(--scrollbar-thumb);
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.4);
+  background: var(--scrollbar-thumb-hover);
 }

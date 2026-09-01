@@ -10,9 +10,11 @@ import { BugHunter } from './components/BugHunter';
 import { QuizView } from './components/QuizView';
 import { ProgressView } from './components/ProgressView';
 import { DeviceFrame } from './components/DeviceFrame';
+import { SplashScreen } from './components/SplashScreen';
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(loadUserProgress);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<MainNavTab>('lessons');
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [activeRoleFilter, setActiveRoleFilter] = useState<RoleFilter>('all');
@@ -117,7 +119,18 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div
+      style={{
+        backgroundColor: 'var(--app-bg)',
+        color: 'var(--text-primary)'
+      }}
+      className="min-h-screen flex flex-col font-sans transition-colors duration-200"
+    >
+      {/* Launch Splash Screen Overlay */}
+      {showSplash && (
+        <SplashScreen onFinish={() => setShowSplash(false)} />
+      )}
+
       {/* Navigation Header & Bottom Floating Tabs */}
       <Navigation
         activeTab={activeTab}

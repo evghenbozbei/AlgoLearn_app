@@ -207,6 +207,7 @@ bubblewrap build
 ```text
 ├── src/
 │   ├── components/            # UI-компоненты приложения
+│   │   ├── SplashScreen.tsx   # Интерактивная заставка при запуске (Splash Screen)
 │   │   ├── ChapterList.tsx    # Каталог глав и тем с блокировкой уроков
 │   │   ├── LessonView.tsx     # Просмотр урока (теория, аналогии, симулятор, тесты)
 │   │   ├── Visualizer.tsx     # Интерактивный симулятор алгоритмов
