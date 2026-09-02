@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AlgoLearn Python</string>
+    <string name="title_activity_main">AlgoLearn Python</string>
+    <string name="package_name">com.algolearn.python</string>
+    <string name="custom_url_scheme">com.algolearn.python</string>
+</resources>
