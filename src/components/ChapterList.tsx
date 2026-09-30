@@ -23,6 +23,7 @@ import { CHAPTERS } from '../data/chapters';
 import { UserProgress, RoleFilter, Lesson } from '../types';
 import {
   isLessonUnlocked,
+  getAllLessons,
   getPreviousLesson,
   getFirstIncompleteLesson,
   getUnlockedLessonsCount
@@ -56,6 +57,8 @@ export const ChapterList: React.FC<ChapterListProps> = ({
   const [lockedModalLesson, setLockedModalLesson] = useState<Lesson | null>(null);
 
   const sequentialMode = progress.sequentialMode !== false;
+  const completedLessons = useMemo(() => new Set(progress.completedLessons), [progress.completedLessons]);
+  const bookmarkedLessons = useMemo(() => new Set(progress.bookmarkedLessons), [progress.bookmarkedLessons]);
 
   const toggleChapter = (chapterId: string) => {
     setExpandedChapters((prev) => ({
@@ -89,12 +92,15 @@ export const ChapterList: React.FC<ChapterListProps> = ({
     }).filter((ch) => ch.filteredLessons.length > 0);
   }, [searchQuery, activeRoleFilter]);
 
-  const totalLessons = CHAPTERS.reduce((acc, c) => acc + c.lessons.length, 0);
+  const totalLessons = getAllLessons().length;
   const completedCount = progress.completedLessons.length;
-  const unlockedCount = getUnlockedLessonsCount(progress.completedLessons, sequentialMode);
+  const unlockedCount = useMemo(
+    () => getUnlockedLessonsCount(completedLessons, sequentialMode),
+    [completedLessons, sequentialMode]
+  );
   const progressPercent = Math.round((completedCount / totalLessons) * 100);
 
-  const nextActiveLesson = getFirstIncompleteLesson(progress.completedLessons);
+  const nextActiveLesson = useMemo(() => getFirstIncompleteLesson(completedLessons), [completedLessons]);
 
   const handleLessonClick = (lesson: Lesson, isUnlocked: boolean) => {
     if (!isUnlocked) {
@@ -353,7 +359,7 @@ export const ChapterList: React.FC<ChapterListProps> = ({
         {filteredChapters.map((chapter) => {
           const isExpanded = expandedChapters[chapter.id] ?? true;
           const chapterCompleted = chapter.filteredLessons.filter((l) =>
-            progress.completedLessons.includes(l.id)
+            completedLessons.has(l.id)
           ).length;
 
           return (
@@ -425,11 +431,11 @@ export const ChapterList: React.FC<ChapterListProps> = ({
                   className="px-3 pb-3 pt-1 space-y-1.5 border-t"
                 >
                   {chapter.filteredLessons.map((lesson) => {
-                    const isLessonDone = progress.completedLessons.includes(lesson.id);
-                    const isBookmarked = progress.bookmarkedLessons.includes(lesson.id);
+                    const isLessonDone = completedLessons.has(lesson.id);
+                    const isBookmarked = bookmarkedLessons.has(lesson.id);
                     const isUnlocked = isLessonUnlocked(
                       lesson.id,
-                      progress.completedLessons,
+                      completedLessons,
                       sequentialMode
                     );
                     const isCurrentNext = nextActiveLesson?.id === lesson.id && !isLessonDone;

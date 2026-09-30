@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { loadUserProgress, saveUserProgress } from './utils/storage';
+import React, { useState, useEffect, useCallback } from 'react';
+import { createInitialProgress, loadUserProgress, saveUserProgress } from './utils/storage';
+import { clampQuizScore } from './utils/quizScoring';
 import { UserProgress, RoleFilter, Lesson } from './types';
-import { CHAPTERS } from './data/chapters';
+import { getLessonById } from './utils/progression';
 import { Navigation, MainNavTab } from './components/Navigation';
 import { ChapterList } from './components/ChapterList';
 import { LessonView } from './components/LessonView';
@@ -15,6 +16,7 @@ import { SplashScreen } from './components/SplashScreen';
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(loadUserProgress);
   const [showSplash, setShowSplash] = useState<boolean>(true);
+  const handleSplashFinish = useCallback(() => setShowSplash(false), []);
   const [activeTab, setActiveTab] = useState<MainNavTab>('lessons');
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
   const [activeRoleFilter, setActiveRoleFilter] = useState<RoleFilter>('all');
@@ -72,23 +74,14 @@ export default function App() {
       ...prev,
       quizScores: {
         ...prev.quizScores,
-        [chapterId]: Math.max(prev.quizScores[chapterId] || 0, score)
+        [chapterId]: clampQuizScore(chapterId, Math.max(prev.quizScores[chapterId] || 0, score))
       }
     }));
   };
 
   // Handle reset
   const handleResetProgress = () => {
-    const initial: UserProgress = {
-      completedLessons: [],
-      bookmarkedLessons: [],
-      completedBugs: [],
-      quizScores: {},
-      currentStreak: 1,
-      lastActiveDate: new Date().toISOString().slice(0, 10)
-    };
-    setProgress(initial);
-    saveUserProgress(initial);
+    setProgress(createInitialProgress());
   };
 
   // Handle toggle sequential mode
@@ -101,7 +94,7 @@ export default function App() {
 
   // Find currently selected lesson
   const currentLesson: Lesson | undefined = selectedLessonId
-    ? CHAPTERS.flatMap((c) => c.lessons).find((l) => l.id === selectedLessonId)
+    ? getLessonById(selectedLessonId)
     : undefined;
 
   const handleSelectLesson = (lessonId: string) => {
@@ -128,7 +121,7 @@ export default function App() {
     >
       {/* Launch Splash Screen Overlay */}
       {showSplash && (
-        <SplashScreen onFinish={() => setShowSplash(false)} />
+        <SplashScreen onFinish={handleSplashFinish} />
       )}
 
       {/* Navigation Header & Bottom Floating Tabs */}
@@ -147,6 +140,7 @@ export default function App() {
             <>
               {currentLesson ? (
                 <LessonView
+                  key={currentLesson.id}
                   lesson={currentLesson}
                   progress={progress}
                   onBack={() => setSelectedLessonId(null)}

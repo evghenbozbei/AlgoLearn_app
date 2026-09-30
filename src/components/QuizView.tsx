@@ -32,12 +32,13 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveScore, onClose }) => {
   };
 
   const handleNext = () => {
+    if (selectedOption === null || isFinished) return;
     if (currentQuestionIndex < filteredQuestions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedOption(null);
     } else {
       setIsFinished(true);
-      onSaveScore(selectedChapterId, score + (selectedOption === question.correctIndex ? 1 : 0));
+      onSaveScore(selectedChapterId, score);
       confetti({
         particleCount: 80,
         spread: 70,

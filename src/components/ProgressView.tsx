@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import appIconUrl from '../assets/images/app_icon_1788125719420.jpg';
 import {
   Trophy,
@@ -20,10 +20,14 @@ import {
   Palette
 } from 'lucide-react';
 import { UserProgress, Lesson } from '../types';
-import { CHAPTERS } from '../data/chapters';
 import { BUG_CHALLENGES } from '../data/bugChallenges';
-import { getFirstIncompleteLesson, getUnlockedLessonsCount } from '../utils/progression';
+import { getAllLessons, getFirstIncompleteLesson, getUnlockedLessonsCount } from '../utils/progression';
 import { useTheme } from '../context/ThemeContext';
+
+const allLessons = getAllLessons();
+const devLessons = allLessons.filter((lesson) => lesson.targetRoles.includes('dev'));
+const qaLessons = allLessons.filter((lesson) => lesson.targetRoles.includes('qa'));
+const devopsLessons = allLessons.filter((lesson) => lesson.targetRoles.includes('devops'));
 
 interface ProgressViewProps {
   progress: UserProgress;
@@ -40,26 +44,26 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 }) => {
   const { theme, setTheme } = useTheme();
 
-  const allLessons = CHAPTERS.flatMap((c) => c.lessons);
+  const completedLessons = useMemo(() => new Set(progress.completedLessons), [progress.completedLessons]);
   const totalLessons = allLessons.length;
   const completedLessonsCount = progress.completedLessons.length;
   const sequentialMode = progress.sequentialMode !== false;
-  const unlockedLessonsCount = getUnlockedLessonsCount(progress.completedLessons, sequentialMode);
-
-  const bookmarkedLessons = allLessons.filter((l) =>
-    progress.bookmarkedLessons.includes(l.id)
+  const unlockedLessonsCount = useMemo(
+    () => getUnlockedLessonsCount(completedLessons, sequentialMode),
+    [completedLessons, sequentialMode]
   );
 
-  const nextLesson = getFirstIncompleteLesson(progress.completedLessons);
+  const bookmarkedLessons = useMemo(() => {
+    const bookmarkedIds = new Set(progress.bookmarkedLessons);
+    return allLessons.filter((lesson) => bookmarkedIds.has(lesson.id));
+  }, [progress.bookmarkedLessons]);
+
+  const nextLesson = useMemo(() => getFirstIncompleteLesson(completedLessons), [completedLessons]);
 
   // Role Breakdown
-  const devLessons = allLessons.filter((l) => l.targetRoles.includes('dev'));
-  const qaLessons = allLessons.filter((l) => l.targetRoles.includes('qa'));
-  const devopsLessons = allLessons.filter((l) => l.targetRoles.includes('devops'));
-
-  const devDone = devLessons.filter((l) => progress.completedLessons.includes(l.id)).length;
-  const qaDone = qaLessons.filter((l) => progress.completedLessons.includes(l.id)).length;
-  const devopsDone = devopsLessons.filter((l) => progress.completedLessons.includes(l.id)).length;
+  const devDone = devLessons.filter((l) => completedLessons.has(l.id)).length;
+  const qaDone = qaLessons.filter((l) => completedLessons.has(l.id)).length;
+  const devopsDone = devopsLessons.filter((l) => completedLessons.has(l.id)).length;
 
   return (
     <div className="space-y-4 pb-20">

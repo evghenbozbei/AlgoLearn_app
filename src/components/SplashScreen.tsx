@@ -13,9 +13,11 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 }) => {
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [statusText, setStatusText] = useState<string>('Инициализация среды Python 3.12...');
-  const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
+  const [fadeDelayMs, setFadeDelayMs] = useState<number | null>(null);
+  const isFadingOut = fadeDelayMs !== null;
 
   useEffect(() => {
+    if (isFadingOut) return;
     const startTime = Date.now();
     const interval = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -34,21 +36,21 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
       if (elapsed >= durationMs) {
         clearInterval(interval);
-        setIsFadingOut(true);
-        setTimeout(() => {
-          onFinish();
-        }, 350); // Small delay for smooth opacity transition
+        setFadeDelayMs(350);
       }
     }, 40);
 
     return () => clearInterval(interval);
-  }, [durationMs, onFinish]);
+  }, [durationMs, isFadingOut]);
+
+  useEffect(() => {
+    if (fadeDelayMs === null) return;
+    const timeout = setTimeout(onFinish, fadeDelayMs);
+    return () => clearTimeout(timeout);
+  }, [fadeDelayMs, onFinish]);
 
   const handleSkip = () => {
-    setIsFadingOut(true);
-    setTimeout(() => {
-      onFinish();
-    }, 200);
+    setFadeDelayMs((current) => current ?? 200);
   };
 
   return (
@@ -71,6 +73,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
         <button
           onClick={handleSkip}
+          disabled={isFadingOut}
           className="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-900 border border-transparent hover:border-slate-800 transition-all flex items-center gap-1"
         >
           <span>Пропустить</span>

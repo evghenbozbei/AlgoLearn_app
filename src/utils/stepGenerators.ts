@@ -1,4 +1,5 @@
 import { VisualStep } from '../types';
+import { PYTHON_CODE } from '../data/pythonCode';
 
 // Linear Search Step Generator
 export function generateLinearSearchSteps(arr: number[] = [14, 7, 22, 5, 31, 18, 9], target: number = 5): VisualStep[] {
@@ -6,7 +7,7 @@ export function generateLinearSearchSteps(arr: number[] = [14, 7, 22, 5, 31, 18,
   steps.push({
     id: 0,
     description: `Инициализируем поиск элемента target = ${target} в массиве длиной ${arr.length}.`,
-    codeLine: 1,
+    codeLine: PYTHON_CODE.linear.line('init'),
     array: [...arr],
     pointers: {},
     currentAction: 'init',
@@ -21,7 +22,7 @@ export function generateLinearSearchSteps(arr: number[] = [14, 7, 22, 5, 31, 18,
     steps.push({
       id: steps.length,
       description: `Шаг ${i + 1}: Проверяем элемент arr[${i}] = ${arr[i]}. Равен ли он target (${target})?`,
-      codeLine: 3,
+      codeLine: PYTHON_CODE.linear.line('compare'),
       array: [...arr],
       pointers: { i },
       highlightIndices: [i],
@@ -33,7 +34,7 @@ export function generateLinearSearchSteps(arr: number[] = [14, 7, 22, 5, 31, 18,
       steps.push({
         id: steps.length,
         description: `🎉 Элемент ${target} найден на индексе ${i}! Возвращаем индекс ${i}.`,
-        codeLine: 4,
+        codeLine: PYTHON_CODE.linear.line('found'),
         array: [...arr],
         pointers: { i },
         foundIndex: i,
@@ -50,7 +51,7 @@ export function generateLinearSearchSteps(arr: number[] = [14, 7, 22, 5, 31, 18,
     steps.push({
       id: steps.length,
       description: `Элемент ${target} отсутствует в массиве после ${comparisons} проверок. Возвращаем -1.`,
-      codeLine: 5,
+      codeLine: PYTHON_CODE.linear.line('missing'),
       array: [...arr],
       pointers: {},
       currentAction: 'discard',
@@ -74,7 +75,7 @@ export function generateBinarySearchSteps(
   steps.push({
     id: 0,
     description: `Бинарный поиск требует отсортированного массива. Ищем target = ${target} в диапазоне [0..${right}].`,
-    codeLine: 2,
+    codeLine: PYTHON_CODE.binary.line('init'),
     array: [...arr],
     pointers: { left, right },
     currentAction: 'init',
@@ -95,7 +96,7 @@ export function generateBinarySearchSteps(
     steps.push({
       id: steps.length,
       description: `Вычисляем середину mid = (${left} + ${right}) // 2 = ${mid}. Значение arr[${mid}] = ${arr[mid]}.`,
-      codeLine: 4,
+      codeLine: PYTHON_CODE.binary.line('mid'),
       array: [...arr],
       pointers: { left, right, mid },
       highlightIndices: [mid],
@@ -109,7 +110,7 @@ export function generateBinarySearchSteps(
       steps.push({
         id: steps.length,
         description: `🎯 Успех! arr[${mid}] == ${target}. Нашли элемент за ${comparisons} шага(ов) (O(log n))!`,
-        codeLine: 5,
+        codeLine: PYTHON_CODE.binary.line('found'),
         array: [...arr],
         pointers: { mid },
         foundIndex: mid,
@@ -130,7 +131,7 @@ export function generateBinarySearchSteps(
       steps.push({
         id: steps.length,
         description: `arr[${oldMid}] (${arr[oldMid]}) < target (${target}). Отбрасываем левую половину, сдвигаем left = ${left}.`,
-        codeLine: 7,
+        codeLine: PYTHON_CODE.binary.line('moveLeft'),
         array: [...arr],
         pointers: { left, right },
         secondaryHighlightIndices: [left, right],
@@ -148,7 +149,7 @@ export function generateBinarySearchSteps(
       steps.push({
         id: steps.length,
         description: `arr[${oldMid}] (${arr[oldMid]}) > target (${target}). Отбрасываем правую половину, сдвигаем right = ${right}.`,
-        codeLine: 9,
+        codeLine: PYTHON_CODE.binary.line('moveRight'),
         array: [...arr],
         pointers: { left, right },
         secondaryHighlightIndices: [left, right],
@@ -163,7 +164,7 @@ export function generateBinarySearchSteps(
     steps.push({
       id: steps.length,
       description: `Границы пересеклись (left > right). Элемент ${target} отсутствует. Возвращаем -1.`,
-      codeLine: 10,
+      codeLine: PYTHON_CODE.binary.line('missing'),
       array: [...arr],
       pointers: {},
       discardedIndices: arr.map((_, idx) => idx),
@@ -187,7 +188,7 @@ export function generateBubbleSortSteps(initialArr: number[] = [29, 10, 14, 37, 
   steps.push({
     id: 0,
     description: `Начало пузырьковой сортировки. Массив из ${n} элементов. Проходим по парам и «всплываем» большие числа вправо.`,
-    codeLine: 1,
+    codeLine: PYTHON_CODE.bubble.line('init'),
     array: [...arr],
     pointers: {},
     currentAction: 'init',
@@ -201,7 +202,7 @@ export function generateBubbleSortSteps(initialArr: number[] = [29, 10, 14, 37, 
       steps.push({
         id: steps.length,
         description: `Сравниваем пару arr[${j}] (${arr[j]}) и arr[${j + 1}] (${arr[j + 1]}).`,
-        codeLine: 4,
+        codeLine: PYTHON_CODE.bubble.line('compare'),
         array: [...arr],
         pointers: { j, 'j+1': j + 1 },
         highlightIndices: [j, j + 1],
@@ -220,7 +221,7 @@ export function generateBubbleSortSteps(initialArr: number[] = [29, 10, 14, 37, 
         steps.push({
           id: steps.length,
           description: `arr[${j}] > arr[${j + 1}]! Меняем их местами (swap).`,
-          codeLine: 5,
+          codeLine: PYTHON_CODE.bubble.line('swap'),
           array: [...arr],
           pointers: { j, 'j+1': j + 1 },
           highlightIndices: [j, j + 1],
@@ -234,7 +235,7 @@ export function generateBubbleSortSteps(initialArr: number[] = [29, 10, 14, 37, 
     steps.push({
       id: steps.length,
       description: `Конец прохода ${i + 1}: элемент arr[${n - i - 1}] (${arr[n - i - 1]}) занял свое финальное место.`,
-      codeLine: 3,
+      codeLine: PYTHON_CODE.bubble.line('pass'),
       array: [...arr],
       pointers: {},
       sortedIndices: [...sorted],
@@ -246,7 +247,7 @@ export function generateBubbleSortSteps(initialArr: number[] = [29, 10, 14, 37, 
       steps.push({
         id: steps.length,
         description: `Оптимизация: за весь проход не было ни одного обмена! Массив уже полностью отсортирован.`,
-        codeLine: 7,
+        codeLine: PYTHON_CODE.bubble.line('earlyExit'),
         array: [...arr],
         pointers: {},
         sortedIndices: arr.map((_, idx) => idx),
@@ -272,7 +273,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
   steps.push({
     id: 0,
     description: `Сортировка выбором: на каждом шаге находим минимальный элемент в неотсортированной части и ставим его в начало.`,
-    codeLine: 1,
+    codeLine: PYTHON_CODE.selection.line('init'),
     array: [...arr],
     pointers: {},
     currentAction: 'init',
@@ -284,7 +285,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
     steps.push({
       id: steps.length,
       description: `Шаг ${i + 1}: Ищем минимум начиная с индекса ${i}. Пока считаем min_idx = ${i} (значение ${arr[i]}).`,
-      codeLine: 3,
+      codeLine: PYTHON_CODE.selection.line('pick'),
       array: [...arr],
       pointers: { i, min_idx: minIdx },
       highlightIndices: [minIdx],
@@ -298,7 +299,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
       steps.push({
         id: steps.length,
         description: `Сравниваем arr[${j}] (${arr[j]}) с текущим минимумом arr[${minIdx}] (${arr[minIdx]}).`,
-        codeLine: 5,
+        codeLine: PYTHON_CODE.selection.line('compare'),
         array: [...arr],
         pointers: { i, min_idx: minIdx, j },
         highlightIndices: [minIdx],
@@ -313,7 +314,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
         steps.push({
           id: steps.length,
           description: `Нашли новый минимум! min_idx теперь равен ${j} (${arr[j]}).`,
-          codeLine: 6,
+          codeLine: PYTHON_CODE.selection.line('minimum'),
           array: [...arr],
           pointers: { i, min_idx: minIdx, j },
           highlightIndices: [minIdx],
@@ -332,7 +333,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
       steps.push({
         id: steps.length,
         description: `Меняем найденный минимум (${arr[i]}) с элементом на позиции ${i} (${temp}).`,
-        codeLine: 7,
+        codeLine: PYTHON_CODE.selection.line('swap'),
         array: [...arr],
         pointers: { i, min_idx: minIdx },
         highlightIndices: [i, minIdx],
@@ -346,7 +347,7 @@ export function generateSelectionSortSteps(initialArr: number[] = [64, 25, 12, 2
     steps.push({
       id: steps.length,
       description: `Позиция ${i} закреплена. Отсортировано элементов: ${sorted.length}/${n}.`,
-      codeLine: 7,
+      codeLine: PYTHON_CODE.selection.line('pass'),
       array: [...arr],
       sortedIndices: [...sorted],
       currentAction: 'step',
@@ -368,7 +369,7 @@ export function generateInsertionSortSteps(initialArr: number[] = [12, 11, 13, 5
   steps.push({
     id: 0,
     description: `Сортировка вставками: как карты в руке. Берем каждый элемент и вставляем на правильное место в левой отсортированной части.`,
-    codeLine: 1,
+    codeLine: PYTHON_CODE.insertion.line('init'),
     array: [...arr],
     sortedIndices: [0],
     currentAction: 'init',
@@ -382,7 +383,7 @@ export function generateInsertionSortSteps(initialArr: number[] = [12, 11, 13, 5
     steps.push({
       id: steps.length,
       description: `Берем ключ key = arr[${i}] (${key}) и ищем для него место среди элементов [0..${i - 1}].`,
-      codeLine: 3,
+      codeLine: PYTHON_CODE.insertion.line('pick'),
       array: [...arr],
       pointers: { key_idx: i, j },
       highlightIndices: [i],
@@ -399,7 +400,7 @@ export function generateInsertionSortSteps(initialArr: number[] = [12, 11, 13, 5
       steps.push({
         id: steps.length,
         description: `arr[${j}] (${arr[j]}) > key (${key}). Сдвигаем ${arr[j]} вправо на позицию ${j + 1}.`,
-        codeLine: 5,
+        codeLine: PYTHON_CODE.insertion.line('shift'),
         array: [...arr],
         pointers: { j, 'j+1': j + 1 },
         highlightIndices: [j, j + 1],
@@ -417,7 +418,7 @@ export function generateInsertionSortSteps(initialArr: number[] = [12, 11, 13, 5
     steps.push({
       id: steps.length,
       description: `Вставляем key (${key}) на освободившуюся позицию ${j + 1}.`,
-      codeLine: 7,
+      codeLine: PYTHON_CODE.insertion.line('place'),
       array: [...arr],
       pointers: { 'вставка': j + 1 },
       highlightIndices: [j + 1],
@@ -430,7 +431,7 @@ export function generateInsertionSortSteps(initialArr: number[] = [12, 11, 13, 5
   steps.push({
     id: steps.length,
     description: `Сортировка завершена! Все элементы упорядочены.`,
-    codeLine: 8,
+    codeLine: PYTHON_CODE.insertion.line('done'),
     array: [...arr],
     sortedIndices: arr.map((_, idx) => idx),
     currentAction: 'found',

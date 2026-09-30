@@ -1,10 +1,6 @@
+import { ALGORITHMS } from './algorithms';
 import { Chapter } from '../types';
 import {
-  generateLinearSearchSteps,
-  generateBinarySearchSteps,
-  generateBubbleSortSteps,
-  generateSelectionSortSteps,
-  generateInsertionSortSteps,
   generateStackSteps,
   generateTwoPointersSteps,
   generateRoundRobinSteps,
@@ -397,22 +393,11 @@ def has_duplicate_logs_slow(logs: list[str]) -> bool:
             'Поиск первого падения в истории тестов'
           ]
         },
-        pythonCode: `# Поиск минимального значения (latency) в массиве
-def find_min_latency(latencies: list[int]) -> int:
-    if not latencies:
-        raise ValueError("Список пуст!")
-    
-    min_val = latencies[0]  # Важно: инициализация первым элементом!
-    for val in latencies[1:]:
-        if val < min_val:
-            min_val = val
-    return min_val
-
-print(find_min_latency([45, 12, 89, 5, 23]))  # 5`,
-        codeExplanation: 'Инициализация min_val = latencies[0] защищает от бага, когда все числа в массиве отрицательные или больше 0.',
+        pythonCode: ALGORITHMS.linear.code,
+        codeExplanation: 'Проверяем arr[i] == target по порядку. Первое совпадение возвращает индекс i; если совпадений нет, возвращаем -1. Поиск min/max также требует линейного прохода.',
         visualizerType: 'array-search',
         initialData: [14, 7, 22, 5, 31, 18, 9],
-        generateSteps: (data) => generateLinearSearchSteps(data || [14, 7, 22, 5, 31, 18, 9], 5),
+        generateSteps: (data) => ALGORITHMS.linear.generateSteps(data || [14, 7, 22, 5, 31, 18, 9], 5),
         roleTips: [
           {
             role: 'qa',
@@ -461,30 +446,11 @@ print(find_min_latency([45, 12, 89, 5, 23]))  # 5`,
             'Быстрый автокомплит в отсортированных словарях'
           ]
         },
-        pythonCode: `# Классический бинарный поиск на Python
-def binary_search(arr: list[int], target: int) -> int:
-    left = 0
-    right = len(arr) - 1
-    
-    while left <= right:
-        mid = (left + right) // 2
-        
-        if arr[mid] == target:
-            return mid  # Элемент найден, возвращаем индекс
-        elif arr[mid] < target:
-            left = mid + 1   # Искомое правее, отбрасываем левую часть
-        else:
-            right = mid - 1  # Искомое левее, отбрасываем правую часть
-            
-    return -1  # Элемент не найден
-
-# Массив ОБЯЗАН быть отсортирован
-sorted_data = [2, 5, 8, 12, 16, 23, 38, 56, 72, 91]
-print(binary_search(sorted_data, 23))  # индекс 5`,
+        pythonCode: ALGORITHMS.binary.code,
         codeExplanation: 'На каждой итерации диапазон поиска [left, right] сокращается в 2 раза. Цикл гарантированно остановится при left > right.',
         visualizerType: 'array-search',
         initialData: [2, 5, 8, 12, 16, 23, 38, 56, 72, 91],
-        generateSteps: (data) => generateBinarySearchSteps(data || [2, 5, 8, 12, 16, 23, 38, 56, 72, 91], 23),
+        generateSteps: (data) => ALGORITHMS.binary.generateSteps(data || [2, 5, 8, 12, 16, 23, 38, 56, 72, 91], 23),
         roleTips: [
           {
             role: 'devops',
@@ -544,27 +510,11 @@ print(binary_search(sorted_data, 23))  # индекс 5`,
             'Почти отсортированные короткие списки'
           ]
         },
-        pythonCode: `# Пузырьковая сортировка с оптимизацией флагом
-def bubble_sort(arr: list[int]) -> list[int]:
-    n = len(arr)
-    for i in range(n):
-        swapped = False
-        # Последние i элементов уже на своих местах
-        for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                # Меняем местами в Python (swap)
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                swapped = True
-        # Если не было ни одного обмена, массив уже отсортирован!
-        if not swapped:
-            break
-    return arr
-
-print(bubble_sort([29, 10, 14, 37, 13]))  # [10, 13, 14, 29, 37]`,
+        pythonCode: ALGORITHMS.bubble.code,
         codeExplanation: 'Конструкция arr[j], arr[j+1] = arr[j+1], arr[j] — это питоничный способ обмена переменных без временной переменной.',
         visualizerType: 'array-sort',
         initialData: [29, 10, 14, 37, 13],
-        generateSteps: (data) => generateBubbleSortSteps(data || [29, 10, 14, 37, 13]),
+        generateSteps: (data) => ALGORITHMS.bubble.generateSteps(data || [29, 10, 14, 37, 13]),
         roleTips: [
           {
             role: 'qa',
@@ -616,24 +566,11 @@ print(bubble_sort([29, 10, 14, 37, 13]))  # [10, 13, 14, 29, 37]`,
             'Когда запись в память стоит очень дорого (например, на Flash-памяти EEPROM)'
           ]
         },
-        pythonCode: `# Сортировка выбором
-def selection_sort(arr: list[int]) -> list[int]:
-    n = len(arr)
-    for i in range(n):
-        min_idx = i
-        for j in range(i + 1, n):
-            if arr[j] < arr[min_idx]:
-                min_idx = j
-        # Ставим найденный минимум на позицию i
-        if min_idx != i:
-            arr[i], arr[min_idx] = arr[min_idx], arr[i]
-    return arr
-
-print(selection_sort([64, 25, 12, 22, 11]))  # [11, 12, 22, 25, 64]`,
+        pythonCode: ALGORITHMS.selection.code,
         codeExplanation: 'Алгоритм фиксирует элементы слева направо: сначала 0-й, потом 1-й, 2-й и т.д.',
         visualizerType: 'array-sort',
         initialData: [64, 25, 12, 22, 11],
-        generateSteps: (data) => generateSelectionSortSteps(data || [64, 25, 12, 22, 11]),
+        generateSteps: (data) => ALGORITHMS.selection.generateSteps(data || [64, 25, 12, 22, 11]),
         roleTips: [
           {
             role: 'qa',
@@ -681,23 +618,11 @@ print(selection_sort([64, 25, 12, 22, 11]))  # [11, 12, 22, 25, 64]`,
             'Потоковые данные, поступающие в реальном времени'
           ]
         },
-        pythonCode: `# Сортировка вставками
-def insertion_sort(arr: list[int]) -> list[int]:
-    for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
-        # Сдвигаем элементы arr[0..i-1], которые больше key
-        while j >= 0 and arr[j] > key:
-            arr[j + 1] = arr[j]
-            j -= 1
-        arr[j + 1] = key
-    return arr
-
-print(insertion_sort([12, 11, 13, 5, 6]))  # [5, 6, 11, 12, 13]`,
+        pythonCode: ALGORITHMS.insertion.code,
         codeExplanation: 'Внутренний цикл while сдвигает элементы вправо, освобождая ячейку arr[j+1] для вставки ключа key.',
         visualizerType: 'array-sort',
         initialData: [12, 11, 13, 5, 6],
-        generateSteps: (data) => generateInsertionSortSteps(data || [12, 11, 13, 5, 6]),
+        generateSteps: (data) => ALGORITHMS.insertion.generateSteps(data || [12, 11, 13, 5, 6]),
         roleTips: [
           {
             role: 'dev',

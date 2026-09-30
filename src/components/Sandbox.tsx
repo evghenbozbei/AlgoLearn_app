@@ -1,43 +1,67 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Sliders, RefreshCw, Play, CheckCircle, HelpCircle } from 'lucide-react';
 import { Visualizer } from './Visualizer';
 import { PythonCodeViewer } from './PythonCodeViewer';
 import {
-  generateLinearSearchSteps,
-  generateBinarySearchSteps,
-  generateBubbleSortSteps,
-  generateSelectionSortSteps,
-  generateInsertionSortSteps
-} from '../utils/stepGenerators';
-
-type AlgorithmKey = 'linear' | 'binary' | 'bubble' | 'selection' | 'insertion';
+  parseSandboxArray, parseSandboxInteger, MAX_ARRAY_INPUT_LENGTH,
+  MAX_INTEGER_INPUT_LENGTH, ARRAY_LENGTH_ERROR, INTEGER_ERROR
+} from '../utils/sandboxInput';
+import { ALGORITHMS, type AlgorithmKey } from '../data/algorithms';
 
 export const Sandbox: React.FC = () => {
   const [selectedAlgo, setSelectedAlgo] = useState<AlgorithmKey>('binary');
   const [customInput, setCustomInput] = useState<string>('5, 12, 18, 23, 45, 67, 89');
-  const [searchTarget, setSearchTarget] = useState<number>(45);
+  const [targetInput, setTargetInput] = useState('45');
+  const [arrayLengthError, setArrayLengthError] = useState<string | undefined>();
+  const [targetLengthError, setTargetLengthError] = useState<string | undefined>();
   const [activeCodeLine, setActiveCodeLine] = useState<number | undefined>(undefined);
 
-  // Parse input array safely
-  const parsedArray = useMemo(() => {
-    try {
-      const nums = customInput
-        .split(/[,\s]+/)
-        .map((x) => parseInt(x.trim(), 10))
-        .filter((n) => !isNaN(n));
-      if (nums.length === 0) return [10, 20, 30, 40, 50];
-      return nums.slice(0, 10); // cap to 10 for optimal mobile UI
-    } catch {
-      return [10, 20, 30, 40, 50];
+  const parsedArray = useMemo(() => parseSandboxArray(customInput), [customInput]);
+  const parsedTarget = useMemo(() => parseSandboxInteger(targetInput), [targetInput]);
+  const isSearch = selectedAlgo === 'linear' || selectedAlgo === 'binary';
+  const searchTarget = isSearch ? parsedTarget.value : undefined;
+  const arrayError = arrayLengthError || parsedArray.error;
+  const targetError = targetLengthError || parsedTarget.error;
+  const inputError = arrayError || (isSearch ? targetError : undefined);
+
+  const handleArrayInput = (value: string) => {
+    if (value.length > MAX_ARRAY_INPUT_LENGTH) {
+      setArrayLengthError(ARRAY_LENGTH_ERROR);
+      return;
     }
-  }, [customInput]);
+    setArrayLengthError(undefined);
+    setCustomInput(value);
+  };
+
+  const handleTargetInput = (value: string) => {
+    if (value.length > MAX_INTEGER_INPUT_LENGTH) {
+      setTargetLengthError(INTEGER_ERROR);
+      return;
+    }
+    setTargetLengthError(undefined);
+    setTargetInput(value);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLInputElement>, limit: number, onInput: (value: string) => void, onTooLong: () => void) => {
+    const input = event.currentTarget;
+    const pasted = event.clipboardData.getData('text');
+    const start = input.selectionStart ?? input.value.length;
+    const end = input.selectionEnd ?? start;
+    event.preventDefault();
+    if (input.value.length - (end - start) + pasted.length > limit) {
+      onTooLong();
+      return;
+    }
+    onInput(input.value.slice(0, start) + pasted + input.value.slice(end));
+  };
 
   // Ensure binary search has sorted array
   const preparedArray = useMemo(() => {
+    if (!parsedArray.value) return [];
     if (selectedAlgo === 'binary') {
-      return [...parsedArray].sort((a, b) => a - b);
+      return [...parsedArray.value].sort((a, b) => a - b);
     }
-    return parsedArray;
+    return parsedArray.value;
   }, [parsedArray, selectedAlgo]);
 
   const generateRandomArray = () => {
@@ -45,111 +69,24 @@ export const Sandbox: React.FC = () => {
     const randNums = Array.from({ length: len }, () => Math.floor(Math.random() * 90) + 10);
     if (selectedAlgo === 'binary') {
       randNums.sort((a, b) => a - b);
-      setSearchTarget(randNums[Math.floor(Math.random() * randNums.length)]);
+      setTargetInput(String(randNums[Math.floor(Math.random() * randNums.length)]));
+      setTargetLengthError(undefined);
     }
     setCustomInput(randNums.join(', '));
+    setArrayLengthError(undefined);
   };
 
   // Generate steps based on selected algorithm
   const steps = useMemo(() => {
-    switch (selectedAlgo) {
-      case 'linear':
-        return generateLinearSearchSteps(preparedArray, searchTarget);
-      case 'binary':
-        return generateBinarySearchSteps(preparedArray, searchTarget);
-      case 'bubble':
-        return generateBubbleSortSteps(preparedArray);
-      case 'selection':
-        return generateSelectionSortSteps(preparedArray);
-      case 'insertion':
-        return generateInsertionSortSteps(preparedArray);
-      default:
-        return generateBinarySearchSteps(preparedArray, searchTarget);
-    }
-  }, [selectedAlgo, preparedArray, searchTarget]);
+    if (inputError) return [];
+    return ALGORITHMS[selectedAlgo].generateSteps(preparedArray, searchTarget);
+  }, [selectedAlgo, preparedArray, searchTarget, inputError]);
 
-  // Algorithm info definitions
-  const algoDetails: {
-    [key in AlgorithmKey]: { name: string; time: string; space: string; code: string; desc: string };
-  } = {
-    linear: {
-      name: 'Линейный поиск (Linear Search)',
-      time: 'O(n)',
-      space: 'O(1)',
-      desc: 'Последовательный перебор элементов от начала до конца.',
-      code: `def linear_search(arr: list[int], target: int) -> int:
-    for i in range(len(arr)):
-        if arr[i] == target:
-            return i
-    return -1`
-    },
-    binary: {
-      name: 'Бинарный поиск (Binary Search)',
-      time: 'O(log n)',
-      space: 'O(1)',
-      desc: 'Деление отсортированного отрезка пополам на каждом шаге.',
-      code: `def binary_search(arr: list[int], target: int) -> int:
-    left, right = 0, len(arr) - 1
-    while left <= right:
-        mid = (left + right) // 2
-        if arr[mid] == target:
-            return mid
-        elif arr[mid] < target:
-            left = mid + 1
-        else:
-            right = mid - 1
-    return -1`
-    },
-    bubble: {
-      name: 'Пузырьковая сортировка (Bubble Sort)',
-      time: 'O(n²)',
-      space: 'O(1)',
-      desc: 'Попарное сравнение соседних элементов и подъем больших чисел вправо.',
-      code: `def bubble_sort(arr: list[int]) -> list[int]:
-    n = len(arr)
-    for i in range(n):
-        swapped = False
-        for j in range(0, n - i - 1):
-            if arr[j] > arr[j + 1]:
-                arr[j], arr[j + 1] = arr[j + 1], arr[j]
-                swapped = True
-        if not swapped:
-            break
-    return arr`
-    },
-    selection: {
-      name: 'Сортировка выбором (Selection Sort)',
-      time: 'O(n²)',
-      space: 'O(1)',
-      desc: 'Поиск минимума в правой части и перемещение его в начало.',
-      code: `def selection_sort(arr: list[int]) -> list[int]:
-    n = len(arr)
-    for i in range(n):
-        min_idx = i
-        for j in range(i + 1, n):
-            if arr[j] < arr[min_idx]:
-                min_idx = j
-        arr[i], arr[min_idx] = arr[min_idx], arr[i]
-    return arr`
-    },
-    insertion: {
-      name: 'Сортировка вставками (Insertion Sort)',
-      time: 'O(n²)',
-      space: 'O(1)',
-      desc: 'Построение отсортированной части по одному элементу.',
-      code: `def insertion_sort(arr: list[int]) -> list[int]:
-    for i in range(1, len(arr)):
-        key = arr[i]
-        j = i - 1
-        while j >= 0 and arr[j] > key:
-            arr[j + 1] = arr[j]
-            j -= 1
-        arr[j + 1] = key
-    return arr`
-    }
-  };
+  const handleStepChange = useCallback((idx: number) => {
+    setActiveCodeLine(steps[idx]?.codeLine);
+  }, [steps]);
 
-  const currentAlgo = algoDetails[selectedAlgo];
+  const currentAlgo = ALGORITHMS[selectedAlgo];
 
   return (
     <div className="space-y-4 pb-20">
@@ -220,6 +157,7 @@ export const Sandbox: React.FC = () => {
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <label
+            htmlFor="sandbox-array"
             style={{ color: 'var(--text-secondary)' }}
             className="text-xs font-semibold"
           >
@@ -235,9 +173,14 @@ export const Sandbox: React.FC = () => {
         </div>
 
         <input
+          id="sandbox-array"
           type="text"
+          maxLength={MAX_ARRAY_INPUT_LENGTH}
+          aria-invalid={!!arrayError}
+          aria-describedby="sandbox-array-help"
           value={customInput}
-          onChange={(e) => setCustomInput(e.target.value)}
+          onChange={(e) => handleArrayInput(e.target.value)}
+          onPaste={(e) => handlePaste(e, MAX_ARRAY_INPUT_LENGTH, handleArrayInput, () => setArrayLengthError(ARRAY_LENGTH_ERROR))}
           style={{
             backgroundColor: 'var(--input-bg)',
             borderColor: 'var(--input-border)',
@@ -246,19 +189,29 @@ export const Sandbox: React.FC = () => {
           className="w-full px-3.5 py-2.5 rounded-xl border text-sm font-mono focus:outline-none focus:border-indigo-500 transition-colors shadow-sm"
           placeholder="например: 4, 12, 28, 35, 60"
         />
+        <p id="sandbox-array-help" role={arrayError ? 'alert' : undefined} className="text-xs" style={{ color: arrayError ? 'var(--accent-rose-text)' : 'var(--text-muted)' }}>
+          {arrayError || 'До 10 целых чисел через запятую или пробел; не более 256 символов.'}
+        </p>
 
         {(selectedAlgo === 'linear' || selectedAlgo === 'binary') && (
           <div className="flex items-center gap-3 pt-1">
             <label
+              htmlFor="sandbox-target"
               style={{ color: 'var(--text-secondary)' }}
               className="text-xs font-semibold whitespace-nowrap"
             >
               Искомый элемент (target):
             </label>
             <input
-              type="number"
-              value={searchTarget}
-              onChange={(e) => setSearchTarget(parseInt(e.target.value, 10) || 0)}
+              id="sandbox-target"
+              type="text"
+              inputMode="numeric"
+              maxLength={MAX_INTEGER_INPUT_LENGTH}
+              aria-invalid={!!targetError}
+              aria-describedby={targetError ? 'sandbox-target-error' : undefined}
+              value={targetInput}
+              onChange={(e) => handleTargetInput(e.target.value)}
+              onPaste={(e) => handlePaste(e, MAX_INTEGER_INPUT_LENGTH, handleTargetInput, () => setTargetLengthError(INTEGER_ERROR))}
               style={{
                 backgroundColor: 'var(--input-bg)',
                 borderColor: 'var(--input-border)',
@@ -267,6 +220,9 @@ export const Sandbox: React.FC = () => {
               className="w-24 px-3 py-1.5 rounded-lg border text-sm font-mono focus:outline-none focus:border-indigo-500"
             />
           </div>
+        )}
+        {isSearch && targetError && (
+          <p id="sandbox-target-error" role="alert" className="text-xs" style={{ color: 'var(--accent-rose-text)' }}>{targetError}</p>
         )}
 
         {selectedAlgo === 'binary' && (
@@ -285,18 +241,13 @@ export const Sandbox: React.FC = () => {
       </div>
 
       {/* Visualizer Frame */}
-      <Visualizer
+      {!inputError && <Visualizer
         key={`${selectedAlgo}-${customInput}-${searchTarget}`}
         steps={steps}
         type={selectedAlgo === 'binary' || selectedAlgo === 'linear' ? 'array-search' : 'array-sort'}
         title={currentAlgo.name}
-        onStepChange={(idx) => {
-          const currentStep = steps[idx];
-          if (currentStep && currentStep.codeLine) {
-            setActiveCodeLine(currentStep.codeLine);
-          }
-        }}
-      />
+        onStepChange={handleStepChange}
+      />}
 
       {/* Python Code Synchronized Box */}
       <div className="space-y-2">
@@ -308,7 +259,7 @@ export const Sandbox: React.FC = () => {
         </div>
         <PythonCodeViewer
           code={currentAlgo.code}
-          activeLine={activeCodeLine}
+          activeLine={inputError ? undefined : activeCodeLine}
           title={`${currentAlgo.name} (Python)`}
         />
       </div>

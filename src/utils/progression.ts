@@ -1,58 +1,62 @@
-import { Lesson } from '../types';
+import type { Lesson } from '../types';
 import { CHAPTERS } from '../data/chapters';
 
-export function getAllLessons(): Lesson[] {
-  return CHAPTERS.flatMap((c) => c.lessons);
+// The curriculum is static. Build its order and ID index once, not per card/render.
+const allLessons: readonly Lesson[] = Object.freeze(CHAPTERS.flatMap((chapter) => chapter.lessons));
+const lessonIndexes = new Map(allLessons.map((lesson, index) => [lesson.id, index]));
+type CompletedLessons = readonly string[] | ReadonlySet<string>;
+
+function asCompletedSet(completedLessons: CompletedLessons): ReadonlySet<string> {
+  return 'has' in completedLessons ? completedLessons : new Set(completedLessons);
+}
+
+function isUnlockedAt(index: number, completed: ReadonlySet<string>): boolean {
+  return index === 0 || completed.has(allLessons[index].id) || completed.has(allLessons[index - 1].id);
+}
+
+export function getAllLessons(): readonly Lesson[] {
+  return allLessons;
+}
+
+export function getLessonById(lessonId: string): Lesson | undefined {
+  const index = lessonIndexes.get(lessonId);
+  return index === undefined ? undefined : allLessons[index];
 }
 
 export function isLessonUnlocked(
   lessonId: string,
-  completedLessons: string[],
+  completedLessons: CompletedLessons,
   sequentialMode: boolean = true
 ): boolean {
-  if (!sequentialMode) return true;
-
-  const all = getAllLessons();
-  const index = all.findIndex((l) => l.id === lessonId);
-  if (index <= 0) return true; // First lesson is always unlocked
-
-  // If already completed, it's unlocked
-  if (completedLessons.includes(lessonId)) return true;
-
-  // It is unlocked if the immediate previous lesson in curriculum was completed
-  const prevLesson = all[index - 1];
-  return completedLessons.includes(prevLesson.id);
+  const index = lessonIndexes.get(lessonId);
+  if (index === undefined) return false;
+  return !sequentialMode || isUnlockedAt(index, asCompletedSet(completedLessons));
 }
 
 export function getPreviousLesson(lessonId: string): Lesson | null {
-  const all = getAllLessons();
-  const index = all.findIndex((l) => l.id === lessonId);
-  if (index > 0) {
-    return all[index - 1];
-  }
-  return null;
+  const index = lessonIndexes.get(lessonId);
+  return index !== undefined && index > 0 ? allLessons[index - 1] : null;
 }
 
 export function getNextLesson(lessonId: string): Lesson | null {
-  const all = getAllLessons();
-  const index = all.findIndex((l) => l.id === lessonId);
-  if (index >= 0 && index < all.length - 1) {
-    return all[index + 1];
-  }
-  return null;
+  const index = lessonIndexes.get(lessonId);
+  return index === undefined ? null : allLessons[index + 1] ?? null;
 }
 
-export function getFirstIncompleteLesson(completedLessons: string[]): Lesson {
-  const all = getAllLessons();
-  const firstIncomplete = all.find((l) => !completedLessons.includes(l.id));
-  return firstIncomplete || all[0];
+export function getFirstIncompleteLesson(completedLessons: CompletedLessons): Lesson {
+  const completed = asCompletedSet(completedLessons);
+  return allLessons.find((lesson) => !completed.has(lesson.id)) || allLessons[0];
 }
 
 export function getUnlockedLessonsCount(
-  completedLessons: string[],
+  completedLessons: CompletedLessons,
   sequentialMode: boolean = true
 ): number {
-  if (!sequentialMode) return getAllLessons().length;
-  const all = getAllLessons();
-  return all.filter((l) => isLessonUnlocked(l.id, completedLessons, sequentialMode)).length;
+  if (!sequentialMode) return allLessons.length;
+  const completed = asCompletedSet(completedLessons);
+  let count = 0;
+  for (let index = 0; index < allLessons.length; index++) {
+    if (isUnlockedAt(index, completed)) count++;
+  }
+  return count;
 }

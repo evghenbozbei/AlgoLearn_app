@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   ArrowLeft,
   Bookmark,
@@ -18,7 +18,7 @@ import {
   Play
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Lesson, UserProgress } from '../types';
+import { Lesson, UserProgress, VisualStep } from '../types';
 import { CHAPTERS } from '../data/chapters';
 import { Visualizer } from './Visualizer';
 import { PythonCodeViewer } from './PythonCodeViewer';
@@ -48,6 +48,11 @@ export const LessonView: React.FC<LessonViewProps> = ({
   const [quickCheckAnswer, setQuickCheckAnswer] = useState<number | null>(null);
   const [selectedRoleTab, setSelectedRoleTab] = useState<'all' | 'dev' | 'qa' | 'devops'>('all');
   const [justCompletedToast, setJustCompletedToast] = useState<boolean>(false);
+  const navigationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => () => {
+    if (navigationTimerRef.current !== null) clearTimeout(navigationTimerRef.current);
+  }, []);
 
   const sequentialMode = progress.sequentialMode !== false;
   const isCompleted = progress.completedLessons.includes(lesson.id);
@@ -63,7 +68,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
     : false;
 
   // Generate visualization steps
-  const steps = lesson.generateSteps
+  const steps = useMemo<VisualStep[]>(() => lesson.generateSteps
     ? lesson.generateSteps(lesson.initialData)
     : [
         {
@@ -72,7 +77,11 @@ export const LessonView: React.FC<LessonViewProps> = ({
           array: (lesson.initialData as number[]) || [1, 2, 3],
           currentAction: 'init'
         }
-      ];
+      ], [lesson.generateSteps, lesson.initialData]);
+
+  const handleStepChange = useCallback((stepIdx: number) => {
+    setActiveCodeLine(steps[stepIdx]?.codeLine);
+  }, [steps]);
 
   const handleCompleteClick = () => {
     onCompleteLesson(lesson.id);
@@ -283,12 +292,7 @@ export const LessonView: React.FC<LessonViewProps> = ({
             steps={steps}
             type={lesson.visualizerType}
             title={lesson.title}
-            onStepChange={(stepIdx) => {
-              const currentStep = steps[stepIdx];
-              if (currentStep && currentStep.codeLine) {
-                setActiveCodeLine(currentStep.codeLine);
-              }
-            }}
+            onStepChange={handleStepChange}
           />
 
           {/* Code Viewer */}
@@ -643,13 +647,15 @@ export const LessonView: React.FC<LessonViewProps> = ({
         {nextLesson && (
           <button
             onClick={() => {
+              if (navigationTimerRef.current !== null) return;
               if (isNextUnlocked) {
                 onSelectLesson(nextLesson.id);
               } else {
                 // Complete current lesson and navigate
                 onCompleteLesson(lesson.id);
                 setJustCompletedToast(true);
-                setTimeout(() => {
+                navigationTimerRef.current = setTimeout(() => {
+                  navigationTimerRef.current = null;
                   onSelectLesson(nextLesson.id);
                 }, 300);
               }
