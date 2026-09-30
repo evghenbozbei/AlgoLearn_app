@@ -149,16 +149,13 @@ npx cap sync android
 В проект уже включена сгенерированная стильная 3D-иконка приложения:
 - Исходный файл иконки: `src/assets/images/app_icon_*.jpg`
 
-Чтобы автоматически сгенерировать все разрешения иконок для Android (`mipmap-mdpi`, `hdpi`, `xhdpi`, `xxhdpi`, `xxxhdpi`):
-```bash
-# Установка генератора ассетов Capacitor
-npm install -D @capacitor/assets
+Готовые иконки и изображения заставки уже находятся в `android/app/src/main/res`; для обычной сборки повторная генерация не нужна.
 
-# Создайте папку assets/ в корне (если нет) и положите туда icon.png (или icon.jpg)
-# Запуск генерации иконок и сплэш-скринов для Android:
-npx capacitor-assets generate --android
-```
-Либо в **Android Studio** нажмите правой кнопкой на папку `android/app/src/main/res` ➔ **`New`** ➔ **`Image Asset`** и выберите изображение иконки из `src/assets/images/`.
+Для замены иконки в **Android Studio** нажмите правой кнопкой на папку `android/app/src/main/res` ➔ **`New`** ➔ **`Image Asset`** и выберите изображение из `src/assets/images/`. Изображения заставки обновляются отдельно в соответствующих папках `drawable-*`.
+
+`@capacitor/assets` удалён из зависимостей: версия 3.0.5 устанавливает Capacitor CLI 5, `tar` 6 и `sharp` 0.32 с известными уязвимостями. Не устанавливайте старый генератор для обычной сборки проекта.
+
+В `package.json` задан точечный `override` для `xcode → uuid@11.1.1`: это исправленная версия с поддержкой CommonJS, необходимой для `xcode`. Причина — [GHSA-w5hq-g745-h8pq](https://github.com/advisories/GHSA-w5hq-g745-h8pq). При обновлении Capacitor CLI проверьте, нужен ли ещё этот `override`, и выполните `npm audit`, `npm test`, `npm run lint`, `npm run build` и `npx cap sync android`.
 
 ---
 
